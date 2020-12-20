@@ -32,6 +32,9 @@ count.yesterday <- 624
 
 covid.raw <- read_csv("http://www.bccdc.ca/Health-Info-Site/Documents/BCCDC_COVID19_Dashboard_Case_Details.csv")
 
+date.lastdata <- last(covid.raw$Reported_Date)
+date.lastfulldata <- date.lastdata - 1
+
 ### Clean BC Daily Case Count
 covid.daily_count <- covid.raw %>% 
   mutate(Reported_Date = as_date(Reported_Date)) %>%
@@ -40,7 +43,7 @@ covid.daily_count <- covid.raw %>%
   arrange(Reported_Date) %>%
   slice(1:(n()-1)) %>%
   #add_row(Reported_Date = date.yesterday, n=count.yesterday) %>%
-  pad(start_val = ymd("2020-01-26"), end_val = date.yesterday) %>%
+  pad(start_val = ymd("2020-01-26"), end_val = date.lastfulldata) %>%
   mutate(n=replace_na(n,0)) #%>%
   #mutate(n=replace(n, which(Reported_Date==ymd("2020-12-12")), 698)) %>% 
   #mutate(n=replace(n, which(Reported_Date==ymd("2020-12-11")), 689))
@@ -120,8 +123,8 @@ covid.estimated_rt %>%
 
 ggsave(paste0(filename), width=9, height= 6.5)
     
-yesterday.month <- month(date.yesterday, label=TRUE)
-message <- paste0("Reproductive Number (Rt) for BC, ", yesterday.month," ", day(date.yesterday), ", ", year(date.yesterday) ,": ",rt.interval)
+lastfulldata.month <- month(date.lastfulldata, label=TRUE)
+message <- paste0("Reproductive Number (Rt) for BC, ", lastfulldata.month," ", day(date.lastfulldata), ", ", year(date.lastfulldata) ,": ",rt.interval)
 print(message)  
     
     
