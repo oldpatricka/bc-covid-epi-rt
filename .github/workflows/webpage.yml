@@ -5,6 +5,8 @@ on:
   pull_request:
     branches:
       - main
+  schedule:
+    - cron: "15 1 * * *"
 
 name: Build-Web-Page
 
@@ -46,7 +48,9 @@ jobs:
         run: |
             rm -Rf html
             mkdir -p html
-            cp htmlsrc/* html/
+            export TZ=America/Vancouver
+            export DATE=`date`
+            envsubst < htmlsrc/index.html > html/index.html
             cp graphs/`ls -tr graphs | tail -n 1` html/rt.png
 
       - name: Deploy To GitHub Pages
